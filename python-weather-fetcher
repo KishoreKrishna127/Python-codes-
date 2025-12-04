@@ -1,0 +1,22 @@
+# main.py
+import requests
+import json
+
+def get_weather(city, api_key):
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        temp = data['main']['temp']
+        desc = data['weather'][0]['description']
+        print(f"{city}: {desc}, {temp}°C")
+        with open('weather.json', 'w') as f:
+            json.dump(data, f, indent=4)
+        return data
+    else:
+        print("API error—check key.")
+        return None
+
+if __name__ == "__main__":
+    api_key = "your_openweathermap_key"  # Free signup
+    get_weather("Mumbai", api_key)
