@@ -1,0 +1,36 @@
+# main.py
+import json
+import sys
+import os
+
+TASKS_FILE = 'todos.json'
+
+def load_todos():
+    if os.path.exists(TASKS_FILE):
+        with open(TASKS_FILE, 'r') as f:
+            return json.load(f)
+    return []
+
+def save_todos(todos):
+    with open(TASKS_FILE, 'w') as f:
+        json.dump(todos, f, indent=4)
+
+def add_todo(task):
+    todos = load_todos()
+    todos.append({"id": len(todos) + 1, "task": task, "done": False})
+    save_todos(todos)
+    print(f"Added: {task}")
+
+def list_todos():
+    todos = load_todos()
+    for t in todos:
+        status = "✓" if t["done"] else "○"
+        print(f"{status} {t['id']}: {t['task']}")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python main.py [add 'task' | list]")
+    elif sys.argv[1] == "add":
+        add_todo(" ".join(sys.argv[2:]))
+    elif sys.argv[1] == "list":
+        list_todos()
