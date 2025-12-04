@@ -1,0 +1,24 @@
+# main.py
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def analyze_csv(file_path):
+    df = pd.read_csv(file_path)
+    print("Dataset Shape:", df.shape)
+    print("\nSummary Stats:\n", df.describe())
+    
+    if len(df.columns) >= 2 and pd.api.types.is_numeric_dtype(df.iloc[:, 0].dtype) and pd.api.types.is_numeric_dtype(df.iloc[:, 1].dtype):
+        plt.figure(figsize=(8, 5))
+        plt.scatter(df.iloc[:, 0], df.iloc[:, 1])
+        plt.xlabel(df.columns[0])
+        plt.ylabel(df.columns[1])
+        plt.title('Data Trends')
+        plt.savefig('analysis.png')
+        plt.show()
+    
+    df_clean = df.dropna()
+    df_clean.to_csv('cleaned_data.csv', index=False)
+    print("Cleaned data & plot saved!")
+
+if __name__ == "__main__":
+    analyze_csv('sales_data.csv')  # Add your CSV
