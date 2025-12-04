@@ -1,0 +1,24 @@
+# main.py
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import csv
+
+def analyze_reviews(csv_file):
+    analyzer = SentimentIntensityAnalyzer()
+    results = []
+    
+    with open(csv_file, 'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            score = analyzer.polarity_scores(row['review'])
+            sentiment = "Positive" if score['compound'] >= 0.05 else "Negative" if score['compound'] <= -0.05 else "Neutral"
+            results.append({'Review': row['review'], 'Sentiment': sentiment, 'Score': score['compound']})
+            print(f"{row['review'][:50]}... → {sentiment}")
+    
+    with open('analyzed_reviews.csv', 'w', newline='') as out:
+        writer = csv.DictWriter(out, fieldnames=['Review', 'Sentiment', 'Score'])
+        writer.writeheader()
+        writer.writerows(results)
+    print("Analysis saved!")
+
+if __name__ == "__main__":
+    analyze_reviews('reviews.csv')  # Columns: review
