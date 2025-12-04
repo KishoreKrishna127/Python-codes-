@@ -1,0 +1,28 @@
+# main.py
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import csv
+
+def send_bulk_emails(csv_file, smtp_server, port, sender, password):
+    server = smtplib.SMTP(smtp_server, port)
+    server.starttls()
+    server.login(sender, password)
+    
+    with open(csv_file, 'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            msg = MIMEMultipart()
+            msg['From'] = sender
+            msg['To'] = row['email']
+            msg['Subject'] = f"Hi {row['name']}, Your Update!"
+            body = "Personalized content here."
+            msg.attach(MIMEText(body, 'plain'))
+            server.send_message(msg)
+            print(f"Sent to {row['email']}")
+    
+    server.quit()
+
+if __name__ == "__main__":
+    send_bulk_emails('contacts.csv', 'smtp.gmail.com', 587, 'your@gmail.com', 'app_pass')
+    # CSV: name,email
