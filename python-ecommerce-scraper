@@ -1,0 +1,25 @@
+# main.py
+import requests
+from bs4 import BeautifulSoup
+import csv
+
+def scrape_prices(url):
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    
+    products = []
+    for item in soup.find_all('div', {'data-component-type': 's-search-result'}):
+        name = item.h2.text.strip() if item.h2 else 'N/A'
+        price = item.find('span', class_='a-price-whole').text.strip() if item.find('span', class_='a-price-whole') else 'N/A'
+        products.append({'Name': name, 'Price': price})
+    
+    with open('prices.csv', 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=['Name', 'Price'])
+        writer.writeheader()
+        writer.writerows(products)
+    print(f"Scraped {len(products)} products to prices.csv")
+
+if __name__ == "__main__":
+    url = "https://www.amazon.in/s?k=smartphones"  # India-focused example
+    scrape_prices(url)
