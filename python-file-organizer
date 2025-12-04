@@ -1,0 +1,29 @@
+# main.py
+import os
+import shutil
+from pathlib import Path
+
+def organize_files(directory):
+    categories = {
+        'Images': ['.jpg', '.png', '.gif', '.jpeg'],
+        'Documents': ['.pdf', '.docx', '.txt', '.xlsx'],
+        'Videos': ['.mp4', '.avi', '.mkv'],
+        'Archives': ['.zip', '.rar', '.7z']
+    }
+    
+    for filename in os.listdir(directory):
+        file_path = Path(directory) / filename
+        if file_path.is_file():
+            ext = file_path.suffix.lower()
+            for cat, exts in categories.items():
+                if ext in exts:
+                    dest = Path(directory) / cat
+                    dest.mkdir(exist_ok=True)
+                    shutil.move(str(file_path), str(dest / filename))
+                    print(f"Moved {filename} to {cat}/")
+                    break
+            else:
+                print(f"{filename} uncategorized.")
+
+if __name__ == "__main__":
+    organize_files('./Downloads')  # Your folder path
